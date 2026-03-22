@@ -1,124 +1,247 @@
-Create a group of agents to build one course for the some program
+A multi-agent system designed to automate the creation of academic courses. Given inputs from a professor, it generates a complete course package including class plans, lecture notes, slides, exercises, exams, and homework projects.
 
-Course Agents:
+---
 
-1. The Planner of the course / Orchestrator: read all input from the professor and start build the course plan. Checks if the classes, exams, homeworks are consistent and the consistency between classes
+## Course Agents
+
+1. **Planner / Orchestrator**
+2. **Class Builders** — see [Class Agents](#class-agents)
+3. **Exam Builder**
+4. **Homework Project Builder**
+5. **Translator**
+
+---
+
+### 1. Planner / Orchestrator
+
+Reads all input from the professor and builds the course plan. Validates consistency across classes, exams, and homework projects. Ensures the course structure matches the program requirements.
 
 Ask questions to the professor:
-- Program (Computer Science for default)
+- Program (default: Computer Science)
 - Course name
 - Syllabus
-- Course curriculum if available
-- Class time length: Usually 3:30 hours
-- Number of classes: Usually 16 classes
-- Number of exams: Usually 2 (one at the middle or other one at the end)
-- Number of homework projects: 3 homeworks
-- Any important information for the course?
-- Language to translate the content
----> Save this information as a base for all other agents
+- Course curriculum (if available)
+- Class time length (default: 3h30)
+- Number of classes (default: 16)
+- Number of exams (default: 2 — one midterm, one final)
+- Number of homework projects (default: 3)
+- Any additional information relevant to the course
+- Language for content delivery
 
-2. Class builders: described in Class Agents
+Output: save all inputs as a shared context document used by all downstream agents.
 
-3. Exam builder:
-- It should use the content of course taught so far
-- It should creat exercises using the Theorical Exercises builder skills. 
-- The questions must be in the medium or hard level.
-- The exam should take all the class time
-- Student cannot check notes
-- The test must provide information to students resolve problems, as formulas, tips.
+---
+
+### 2. Class Builders
+
+Described in detail in [Class Agents](#class-agents).
+
+---
+
+### 3. Exam Builder
+
+Uses the content taught up to the exam date to build a closed-book assessment.
+
+Rules:
+- Questions must be medium or hard difficulty
+- The exam must fill the entire class time slot
+- Students cannot consult notes
+- The exam must include supporting information (formulas, tips, reference tables) so students can solve problems without memorization
 
 Ask questions to the professor:
-- If the professor has a template of the exam
-- How many questions do they expect?
-- Some basic structure of the exam? What each question should assess?
-- How many different tests will be create? In what part will be diffent?
+- Does the professor have an exam template?
+- How many questions are expected?
+- What structure should the exam follow? What should each question assess?
+- How many different exam versions are needed, and what sections should differ between versions?
 
-3. Homework project builder:
-- It should use the content of course taught so far
-- Create a real world scenario practical challenge (usually code) with hard level of dificult
-- Create a central challenge.
-- Create 15 real word cases on the top the central challenge
-- Write what is expected from the students
-- Create the evaluation criteria
-- Write what the expected delivrables and how they should be delivered
+Output: one or more exam documents in markdown format, ready for PDF export.
+
+---
+
+### 4. Homework Project Builder
+
+Uses the content taught up to that point to create a real-world practical challenge.
+
+Rules:
+- Create a central challenge with hard difficulty
+- Build 15 real-world case variations on top of the central challenge
+- Write clear expectations for what students must deliver
+- Define evaluation criteria
+- Specify deliverables and submission format
 
 Ask questions to the professor:
-If it is a programming project
-- What is the expected programming language?
-- If the student can use libraries? which ones are allowed?
+- Is this a programming project?
+  - If yes: what is the expected programming language?
+  - Can students use external libraries? Which ones are allowed?
 
-4. The translator: translate of the content. Make all artifacts consistent with the same language and words
-
----
-## Class agents
-
-1. Class builder: orchestractor of creator from a class other agents. Check if all the content is consistent and it fits in the class expected time. Use the agents bellow to build a class
-
-2. scriptwriter / Professor guider -> create the guide of the class with the step-by-step with the total time of the class and amount of time to each task. Use the theory, exercises to build it.
-
-3. Lecture Notes builder: explains the theory in details with examples. Use Theory of Pratical exercises skills to build resolved exercises (theorical exercicises, start by an easy and one medium level). Use the audience level to ajust the level. get the original papers and references.
-- It must create in markdown format.
-- It must use latex 
-- It must use mermaid for diagrams
-- It should use the exercices from Theorical Exercises
-- Create a document for it
-
-4. Code example builder: If the class has a pratical aspect, build some code with an example of application
-- Creates a folder with the code
-- Describe what is necessary to run this code (if locally or external resource)
-- Use the lecture notes to build the example
-- It must be a real case scenario
-- You can create more code examples for the same class, with the limit of 3
-
-5. Slide builder: take the theory and resolved exercises and build slides to present
-- It must create in markdown format.
-- It must use latex 
-- It must use mermaid for diagrams
-- It should use the lecture notes as reference
-- It should use the exercices from lecture notes 
-- Create a page for it
-
-6. Theorical Exercises builder: create exercises that students resolve in their notebooks and the professor can resolve in the whiteboard
-- Write at least 15 exercises with easy, medium and hard difficult levels
-
-7. Pratical Exercises builder: create a hand-on exercise which the student can apply the learning using code
-- Use a simple real world scenario
-- Student must deliver some code artifact
-- Use some code skill: Google Colab (Jupyter), Python, 
-- Describe the necessary resources (libs)
-- Generate a boilerplate from where the student can continue.
-- Use as close as possible the code generated by "Code example builder"
-
-8. Extra material: gets important youtube videos, web pages and articles as extra material to students
-
----
-First Skills:
-
-Skill: code builder
-- Use the language defined in the main document
-- Write detailed comments to support the students
-- Summarizes part of the theory in important blocks of code
-
-Skill: slide builder:
-- Must write all the content using markdown
-- They must a template provided by user
-- They must generate a pdf at the end
-
-Skill: diagrams
-- Preference: use Mermaid
-- Draw with asciiart
-- Draw using GenAI
-
-Skill: graphs
-- Preference: use Mermaid
-- Draw using GenAI
-
-Skills: image builder
-- You can generate GenAI
+Output: a homework document in markdown format with the challenge description, cases, rubric, and submission instructions.
 
 ---
 
-Actions:
+### 5. Translator
 
-Suggest me the agents descriptions and the skills descriptions
-Suggest me the tools to be used to produce the content
+Translates all course artifacts into the language defined in the Planner context. Ensures terminology and wording are consistent across all documents.
+
+Trigger: runs after all other agents have produced their output, or on demand per artifact.
+
+---
+
+## Class Agents
+
+### 1. Class Builder (Orchestrator)
+
+Coordinates all class-level agents. Validates that all content is consistent and fits within the expected class time. Signals failure if time budget is exceeded or content is inconsistent.
+
+Uses the agents below to build a complete class.
+
+---
+
+### 2. Scriptwriter / Professor Guide
+
+Creates a step-by-step class guide for the professor, including total class time and time allocated to each activity (theory, exercises, breaks, Q&A). Built from lecture notes and exercises.
+
+---
+
+### 3. Lecture Notes Builder
+
+Explains the theory in detail with examples. Includes resolved theoretical exercises (start with easy, then medium level). Adjusts depth to the audience level. Fetches original papers and references.
+
+Requirements:
+- Format: markdown
+- Use LaTeX for formulas and equations
+- Use Mermaid for diagrams
+- Include exercises from the Theoretical Exercises builder
+- Output: a standalone document per class
+
+---
+
+### 4. Code Example Builder
+
+Builds a working code example illustrating a practical application of the class content. Only runs if the class has a practical aspect.
+
+Requirements:
+- Creates a dedicated folder for the code
+- Documents what is needed to run the code (local setup or external resources)
+- Based on the lecture notes
+- Must use a real-world scenario
+- Up to 3 code examples per class
+
+---
+
+### 5. Slide Builder
+
+Builds a slide deck from the theory and resolved exercises.
+
+Requirements:
+- Format: markdown
+- Use LaTeX for formulas and equations
+- Use Mermaid for diagrams
+- Based on the lecture notes
+- Include exercises from the lecture notes
+- Output: one slide deck per class
+
+---
+
+### 6. Theoretical Exercises Builder
+
+Creates pen-and-paper exercises for students to solve in their notebooks, suitable for whiteboard resolution by the professor.
+
+Requirements:
+- At least 15 exercises
+- Mix of easy, medium, and hard difficulty levels
+
+---
+
+### 7. Practical Exercises Builder
+
+Creates a hands-on coding exercise where students apply what they learned.
+
+Requirements:
+- Simple real-world scenario
+- Students must deliver a code artifact
+- Supported environments: Google Colab (Jupyter), Python, or the language defined in the course context
+- List all required libraries and resources
+- Provide a boilerplate for students to continue from
+- Reuse code from the Code Example Builder where possible
+
+---
+
+### 8. Extra Material
+
+Curates supplementary resources for students who want to go deeper.
+
+Requirements:
+- Include YouTube videos, articles, and web pages
+- Select only high-quality, relevant content
+- Output: a curated list with links and one-line descriptions per resource
+
+---
+
+## Skills
+
+> These are initial skill suggestions. More skills may be identified as the system evolves.
+
+### Skill: Code Builder *(suggested)*
+- Use the programming language defined in the course context
+- Write detailed inline comments to support student understanding
+- Summarize relevant theory in key code blocks
+
+### Skill: Slide Builder *(suggested)*
+- Write all content in markdown format
+- Follow the template provided by the professor
+- Export to PDF at the end
+
+### Skill: Diagrams *(suggested)*
+- Preferred tool: Mermaid
+- Fallback: ASCII art
+- Alternative: generate using GenAI
+
+### Skill: Graphs *(suggested)*
+- Preferred tool: Mermaid
+- Alternative: generate using GenAI
+
+### Skill: Image Builder *(suggested)*
+- Generate using GenAI
+
+### Skill: Exercise Generator *(suggested)*
+- Generate exercises from a given topic, concept, or learning objective
+- Support multiple formats: multiple choice, open-ended, fill-in-the-blank, true/false
+- Tag each exercise with difficulty level (easy / medium / hard) and the concept it covers
+- Ensure variety — avoid repeating the same structure back-to-back
+
+### Skill: Rubric Builder *(suggested)*
+- Create grading rubrics for exercises, homework, and exams
+- Define clear criteria and point weights per criterion
+- Align rubric with the stated learning objectives
+
+### Skill: Learning Objective Writer *(suggested)*
+- Write clear, measurable learning objectives for a class or unit
+- Follow Bloom's taxonomy levels (remember, understand, apply, analyze, evaluate, create)
+- Used by other agents to calibrate content depth and assessment difficulty
+
+### Skill: Citation & Reference Finder *(suggested)*
+- Search for and format academic references related to a given topic
+- Prefer primary sources (papers, textbooks) over secondary ones
+- Output in a consistent citation format (APA, ABNT, or professor's preference)
+
+### Skill: Time Estimator *(suggested)*
+- Estimate the time required to cover a given piece of content in class
+- Takes into account content complexity, audience level, and activity type (lecture, exercise, discussion)
+- Used by the Scriptwriter and Class Builder to validate time budgets
+
+### Skill: Summary Writer *(suggested)*
+- Produce concise summaries of lecture notes or topics
+- Useful for slide introductions, extra material descriptions, and review sections
+- Adjust length based on context (one paragraph, bullet list, or executive summary)
+
+### Skill: Boilerplate Generator *(suggested)*
+- Generate starter code scaffolds for practical exercises and homework
+- Include placeholder comments indicating what the student must implement
+- Match the style and language of the Code Example Builder output
+
+---
+
+## Next Steps
+
+- Define agent descriptions and skill descriptions in detail
+- Identify and document the tools to be used for content production
