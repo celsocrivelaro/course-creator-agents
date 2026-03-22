@@ -94,6 +94,11 @@ If it is a programming project
 ---
 First Skills:
 
+Skill: code builder
+- Use the language defined in the main document
+- Write detailed comments to support the students
+- Summarizes part of the theory in important blocks of code
+
 Skill: slide builder:
 - Must write all the content using markdown
 - They must a template provided by user
