@@ -5,10 +5,11 @@ A multi-agent system designed to automate the creation of academic courses. Give
 ## Course Agents
 
 1. **Planner / Orchestrator**
-2. **Class Builders** — see [Class Agents](#class-agents)
-3. **Exam Builder**
-4. **Homework Project Builder**
-5. **Translator**
+2. **Content Collector**
+3. **Class Builders** — see [Class Agents](#class-agents)
+4. **Exam Builder**
+5. **Homework Project Builder**
+6. **Translator**
 
 ---
 
@@ -32,13 +33,38 @@ Output: save all inputs as a shared context document used by all downstream agen
 
 ---
 
-### 2. Class Builders
+### 2. Content Collector
+
+Asks the professor whether existing class materials are available and ingests them as reference content for all downstream agents.
+
+Ask questions to the professor:
+- Do you have an existing class plan (syllabus breakdown per class)?
+- Do you have content prepared for any of the classes? (slides, notes, scripts, etc.)
+- For each class with existing content, what format is it in?
+
+Supported input formats:
+- PDF documents
+- Office files (`.pptx`, `.docx`, `.xlsx`)
+- Markdown files (`.md`)
+- Web pages (URLs)
+- Apple formats (`.pages`, `.key`, `.numbers`)
+
+For each piece of content provided:
+- Extract and store the text, structure, and key concepts
+- Tag it with the class number or topic it belongs to
+- Save it to a shared content repository accessible by all other agents
+
+Output: a structured content index per class, linking raw source files and extracted summaries. Downstream agents must consult this index before generating new content — existing material takes priority over generating from scratch.
+
+---
+
+### 3. Class Builders
 
 Described in detail in [Class Agents](#class-agents).
 
 ---
 
-### 3. Exam Builder
+### 4. Exam Builder
 
 Uses the content taught up to the exam date to build a closed-book assessment.
 
@@ -58,7 +84,7 @@ Output: one or more exam documents in markdown format, ready for PDF export.
 
 ---
 
-### 4. Homework Project Builder
+### 5. Homework Project Builder
 
 Uses the content taught up to that point to create a real-world practical challenge.
 
@@ -78,7 +104,7 @@ Output: a homework document in markdown format with the challenge description, c
 
 ---
 
-### 5. Translator
+### 6. Translator
 
 Translates all course artifacts into the language defined in the Planner context. Ensures terminology and wording are consistent across all documents.
 
@@ -238,6 +264,25 @@ Requirements:
 - Generate starter code scaffolds for practical exercises and homework
 - Include placeholder comments indicating what the student must implement
 - Match the style and language of the Code Example Builder output
+
+### Skill: PDF Reader *(suggested)*
+- Extract text, structure, and embedded images from PDF files
+- Preserve section hierarchy (headings, paragraphs, lists) where possible
+- Handle scanned PDFs using OCR when native text is unavailable
+- Output: structured text ready for ingestion by other agents
+
+### Skill: Office Format Reader *(suggested)*
+- Extract content from Office and Apple formats: `.pptx`, `.docx`, `.xlsx`, `.pages`, `.key`, `.numbers`
+- For presentations (`.pptx`, `.key`): extract slide titles, body text, speaker notes, and diagrams
+- For documents (`.docx`, `.pages`): extract text with heading structure preserved
+- For spreadsheets (`.xlsx`, `.numbers`): extract tables and labels
+- Output: structured text and tables ready for ingestion by other agents
+
+### Skill: Web Page Reader *(suggested)*
+- Fetch and extract the main content from a given URL
+- Strip navigation, ads, and boilerplate; preserve article structure
+- Follow links one level deep if the professor provides an index page
+- Output: clean markdown text ready for ingestion by other agents
 
 ---
 
